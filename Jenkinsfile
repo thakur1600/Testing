@@ -1,0 +1,70 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone') {
+            steps {
+               git url:"https://github.com/thakur1600/Testing.git",branch:"main"
+            }
+        }
+
+       stage('Build') {
+            steps {
+               sh '''
+               set -e
+
+               docker build --platform linux/arm64 --no-cache -f ./react-client/Dockerfile -t frontend:latest ./react-client
+
+               docker build --platform linux/arm64 --no-cache -f ./node-express-server/Dockerfile -t backend:latest ./node-express-server
+               '''
+            }
+        }
+
+       stage('Test'){
+           steps{
+               echo "Done with Testing "
+           }
+       }
+
+       stage('Push to Docker Hub'){
+           steps{
+               withCredentials([usernamePassword(
+                credentialsId: 'dockerhub',
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_PASS'
+            )]) {
+                sh '''
+                set -e
+
+                echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+        
+                docker tag frontend:latest sumit1968/frontend:latest
+                docker tag backend:latest sumit1968/backend:latest
+        
+                docker push sumit1968/frontend:latest
+                docker push sumit1968/backend:latest
+        
+                docker logout
+                '''
+               }
+               
+            }
+       }
+
+       stage('Code Deploy'){
+    steps{
+        sh '''
+        set -e
+
+        docker compose down --remove-orphans || true
+
+        docker rm -f frontend || true
+        docker rm -f backend || true
+        docker rm -f mysqldb || true
+
+        docker compose up -d --build
+        '''
+    }
+}
+    }
+}
