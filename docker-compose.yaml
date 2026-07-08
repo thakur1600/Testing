@@ -22,7 +22,7 @@ services:
       - newnetwork
 
   backend:
-    build: ./node-express-server
+    build: sumit1968/backend:latest
     container_name: backend
     depends_on:
       mysqldb:
@@ -40,7 +40,7 @@ services:
       - newnetwork
   
   frontend:
-    build: ./react-client
+    build: sumit1968/frontend:latest
     container_name: frontend
     ports:
       - "8081:8081"
