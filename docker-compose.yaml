@@ -28,7 +28,7 @@ services:
       mysqldb:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "8010:8010"
     environment:
       - DB_HOST=mysqldb
       - DB_USER=root
