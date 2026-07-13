@@ -13,9 +13,9 @@ pipeline {
                sh '''
                set -e
 
-               docker build --no-cache -f ./react-client/Dockerfile -t frontend:latest ./react-client
+                docker build --no-cache -f ./react-client/Dockerfile -t sumit1968/frontend:latest ./react-client
 
-               docker build --no-cache -f ./node-express-server/Dockerfile -t backend:latest ./node-express-server
+                docker build --no-cache -f ./node-express-server/Dockerfile -t sumit1968/backend:latest ./node-express-server
                '''
             }
         }
@@ -37,9 +37,6 @@ pipeline {
                 set -e
 
                 echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-        
-                docker tag frontend:latest sumit1968/frontend:latest
-                docker tag backend:latest sumit1968/backend:latest
         
                 docker push sumit1968/frontend:latest
                 docker push sumit1968/backend:latest
