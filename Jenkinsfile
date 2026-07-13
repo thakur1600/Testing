@@ -13,9 +13,9 @@ pipeline {
                sh '''
                set -e
 
-               docker build --platform linux/arm64 --no-cache -f ./react-client/Dockerfile -t frontend:latest ./react-client
+               docker build --no-cache -f ./react-client/Dockerfile -t frontend:latest ./react-client
 
-               docker build --platform linux/arm64 --no-cache -f ./node-express-server/Dockerfile -t backend:latest ./node-express-server
+               docker build --no-cache -f ./node-express-server/Dockerfile -t backend:latest ./node-express-server
                '''
             }
         }
