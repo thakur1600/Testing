@@ -1,5 +1,7 @@
 pipeline {
-    agent Slave;
+    agent {
+        label 'Slave'
+    };
 
     stages {
         stage('Clone') {
