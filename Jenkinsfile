@@ -66,4 +66,21 @@ pipeline {
     }
 }
     }
+    
+post{
+    success{
+     emailext(
+                subject: 'Success',
+                body: 'Build successful',
+                to: 'sumitthakur1600@gmail.com'
+            )
+    }
+    failure{
+        emailext(
+                subject: 'Failed',
+                body: 'Build Failed',
+                to: 'sumitthakur1600@gmail.com'
+            )
+    }
+}
 }
