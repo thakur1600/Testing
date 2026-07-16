@@ -1,0 +1,76 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+
+  build-test-push-deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Build Frontend Image
+      run: |
+        docker build \
+        --no-cache \
+        -f ./react-client/Dockerfile \
+        -t sumit1968/frontend:latest \
+        ./react-client
+
+    - name: Build Backend Image
+      run: |
+        docker build \
+        --no-cache \
+        -f ./node-express-server/Dockerfile \
+        -t sumit1968/backend:latest \
+        ./node-express-server
+
+    - name: Test
+      run: |
+        echo "Done with Testing"
+
+    - name: Login to Docker Hub
+      run: |
+        echo "${{ secrets.DOCKER_PASS }}" | docker login \
+        -u "${{ secrets.DOCKER_USER }}" \
+        --password-stdin
+
+    - name: Push Frontend Image
+      run: docker push sumit1968/frontend:latest
+
+    - name: Push Backend Image
+      run: docker push sumit1968/backend:latest
+
+    - name: Logout
+      run: docker logout
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v1.2.0
+
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_KEY }}
+
+        script: |
+
+          cd /home/ubuntu/project
+
+          echo "${{ secrets.DOCKER_PASS }}" | docker login \
+          -u "${{ secrets.DOCKER_USER }}" \
+          --password-stdin
+
+          docker compose pull
+
+          docker compose down
+
+          docker compose up -d
+
+          docker image prune -f
