@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
 require("./app/routes/turorial.routes")(app);
 
 // set port, listen for requests
-const PORT = 8010;
+const PORT = process.env.NODE_DOCKER_PORT;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
